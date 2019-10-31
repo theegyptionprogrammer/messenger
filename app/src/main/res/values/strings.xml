@@ -11,4 +11,6 @@
     <string name="Profilepic">ProfilePic</string>
     <string name="sign_out">sign out</string>
     <string name="new_message">new message</string>
+    <string name="type_a_message">type a message</string>
+    <string name="send">send</string>
 </resources>

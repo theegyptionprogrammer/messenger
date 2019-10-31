@@ -1,10 +1,12 @@
-package com.example.ourmessenger
+package com.example.ourmessenger.messgages
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
+import com.example.ourmessenger.R
+import com.example.ourmessenger.RegisterLogin.RegisterActivity
 import com.google.firebase.auth.FirebaseAuth
 
 class LatestMessagesActivity : AppCompatActivity() {
@@ -26,11 +28,11 @@ class LatestMessagesActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId){
-            R.id.newmessage->{
+            R.id.newmessage -> {
                 val intent = Intent(this , NewMessage::class.java)
                 startActivity(intent)
             }
-            R.id.signout->{
+            R.id.signout -> {
                 FirebaseAuth.getInstance().signOut()
                 val intent = Intent(this , RegisterActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or (Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -42,7 +44,7 @@ class LatestMessagesActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_latest_messages , menu)
+        menuInflater.inflate(R.menu.menu_latest_messages, menu)
         return super.onCreateOptionsMenu(menu)
     }
 }

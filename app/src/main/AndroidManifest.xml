@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.ourmessenger"
-    tools:ignore="ExtraText">
+    package="com.example.ourmessenger">
 
     <application
         android:allowBackup="true"
@@ -12,29 +11,21 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".LatestMessagesActivity" >
+        <activity android:name=".messgages.ChatLog"></activity>
+        <activity android:name=".messgages.LatestMessagesActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".RegisterActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity android:name=".LoginActivity" />
-        <activity android:name=".NewMessage" >
+        <activity android:name=".RegisterLogin.LoginActivity" />
+        <activity android:name=".RegisterLogin.RegisterActivity" />
+        <activity android:name=".messgages.NewMessage">
             <meta-data
-                android:name="android.support.Parent_Activity"
-                android:value=".LatestMessagesActivity" />
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".messgages.LatestMessagesActivity" />
         </activity>
     </application>
-
-    android:debuggable="true"
 
 </manifest>

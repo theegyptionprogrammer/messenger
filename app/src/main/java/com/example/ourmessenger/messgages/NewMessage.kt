@@ -1,9 +1,11 @@
-package com.example.ourmessenger
+package com.example.ourmessenger.messgages
 
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import com.google.firebase.auth.FirebaseAuth
+import androidx.appcompat.app.AppCompatActivity
+import com.example.ourmessenger.R
+import com.example.ourmessenger.modules.User
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -15,6 +17,7 @@ import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.activity_new_message.*
 import kotlinx.android.synthetic.main.user.view.*
 
+
 class NewMessage : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,27 +27,36 @@ class NewMessage : AppCompatActivity() {
         fetchUsers()
     }
 
-    companion object{
-        val tag = "NewMessage"
+    companion object {
+        val USER_KEY = "USER_KEY"
     }
 
-    fun fetchUsers(){
+
+    private fun fetchUsers() {
         val ref = FirebaseDatabase.getInstance().getReference("/users")
-
         ref.addListenerForSingleValueEvent(object :ValueEventListener{
-            override fun onDataChange(p0: DataSnapshot) {
-                val adapter = GroupAdapter<ViewHolder>()
-                p0.children.forEach {
-                    Log.d(tag , it.toString())
-                    val user = it.getValue(User::class.java)
-                    adapter.add(UserItem(user!!))
 
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val adapter = GroupAdapter<ViewHolder>()
+                dataSnapshot.children.forEach {
+                    val user = it.getValue(User::class.java)
+                    Log.d("NewMessage", it.toString())
+                    adapter.add(UserItem(user!!))
                 }
                 list_users.adapter = adapter
+
+                adapter.setOnItemClickListener { item, view ->
+                    val userItem = item as UserItem
+
+                    val intent = Intent(view.context, ChatLog::class.java)
+                    intent.putExtra(USER_KEY, userItem.user.username)
+                    intent.putExtra(USER_KEY, userItem.user.selectedPhotoUrl)
+                    startActivity(intent)
+
+                }
             }
 
             override fun onCancelled(p0: DatabaseError) {
-
             }
         })
     }
@@ -60,6 +72,5 @@ class UserItem(val user : User) : Item<ViewHolder>(){
     override fun getLayout(): Int {
         return R.layout.user
     }
-
 
 }
