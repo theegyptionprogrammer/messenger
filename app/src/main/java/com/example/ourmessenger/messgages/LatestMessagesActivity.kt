@@ -7,17 +7,42 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.example.ourmessenger.R
 import com.example.ourmessenger.RegisterLogin.RegisterActivity
+import com.example.ourmessenger.modules.User
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 class LatestMessagesActivity : AppCompatActivity() {
+
+    companion object {
+        var currentUser: User? = null
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_latest_messages)
         checkIfUserLogined()
+        fetchCurrentUser()
     }
 
-    fun checkIfUserLogined(){
+    private fun fetchCurrentUser() {
+        val uid = FirebaseAuth.getInstance().uid
+        val ref = FirebaseDatabase.getInstance().getReference("/users$uid")
+        ref.addListenerForSingleValueEvent(object : ValueEventListener {
+
+            override fun onDataChange(p0: DataSnapshot) {
+                currentUser = p0.getValue(User::class.java)
+            }
+
+            override fun onCancelled(p0: DatabaseError) {
+
+            }
+        })
+    }
+
+    private fun checkIfUserLogined() {
         val uid = FirebaseAuth.getInstance().uid
         if (uid == null){
             val intent = Intent(this , RegisterActivity::class.java)

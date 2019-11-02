@@ -6,11 +6,13 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.ourmessenger.R
 import com.example.ourmessenger.modules.Message
 import com.example.ourmessenger.modules.User
+import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.squareup.picasso.Picasso
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.Item
 import com.xwray.groupie.ViewHolder
@@ -29,6 +31,7 @@ class ChatLog : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_log)
+        FirebaseApp.initializeApp(this)
 
         val user = intent.getParcelableExtra<User>(NewMessage.USER_KEY)
 
@@ -47,13 +50,14 @@ class ChatLog : AppCompatActivity() {
         ref.addChildEventListener(object : ChildEventListener {
             override fun onChildAdded(p0: DataSnapshot, p1: String?) {
                 val message = p0.getValue(Message::class.java)
-
                 if (message != null) Log.d(TAG, message.text)
 
                 if (message?.firstUser == FirebaseAuth.getInstance().uid) {
-                    adapter.add(UserFirstRow(message!!.text))
+                    val firstUserPP = LatestMessagesActivity.currentUser ?: return
+                    adapter.add(UserFirstRow(message!!.text, firstUserPP))
                 } else {
-                    adapter.add(UserSecondRow(message!!.text))
+                    val secondUserPP = intent.getParcelableExtra<User>(NewMessage.USER_KEY)
+                    adapter.add(UserSecondRow(message!!.text, secondUserPP))
                 }
             }
 
@@ -83,7 +87,7 @@ class ChatLog : AppCompatActivity() {
     }
 }
 
-class UserFirstRow(private var text: String) : Item<ViewHolder>() {
+class UserFirstRow(private var text: String, private var user: User) : Item<ViewHolder>() {
 
     override fun getLayout(): Int {
         return R.layout.user_1_row
@@ -91,11 +95,12 @@ class UserFirstRow(private var text: String) : Item<ViewHolder>() {
 
     override fun bind(viewHolder: ViewHolder, position: Int) {
         text = viewHolder.itemView.firstMessage.text as String
+        Picasso.get().load(user.selectedPhotoUrl).into(viewHolder.itemView.firstIamge)
     }
 
 }
 
-class UserSecondRow(private var text: String) : Item<ViewHolder>() {
+class UserSecondRow(private var text: String, private var user: User) : Item<ViewHolder>() {
 
     override fun getLayout(): Int {
         return R.layout.user_2_row
@@ -103,6 +108,7 @@ class UserSecondRow(private var text: String) : Item<ViewHolder>() {
 
     override fun bind(viewHolder: ViewHolder, position: Int) {
         text = viewHolder.itemView.secondMessage.text as String
+        Picasso.get().load(user.selectedPhotoUrl).into(viewHolder.itemView.secondImage)
     }
 
 }
