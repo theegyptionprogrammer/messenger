@@ -17,16 +17,13 @@
         android:padding="16dp"
         android:textColor="@color/colorBlack"
         app:layout_constraintStart_toEndOf="@id/firstIamge"
-        app:layout_constraintTop_toTopOf="@+id/firstIamge" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/firstIamge"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
         app:civ_border_color="@color/colorBlack"
         app:civ_border_width="2dp"
         app:layout_constraintStart_toStartOf="parent"

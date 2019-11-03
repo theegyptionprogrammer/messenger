@@ -27,15 +27,16 @@ class ChatLog : AppCompatActivity() {
     }
 
     val adapter = GroupAdapter<ViewHolder>()
+    private var secondUser: User? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_log)
         FirebaseApp.initializeApp(this)
 
-        val user = intent.getParcelableExtra<User>(NewMessage.USER_KEY)
+        secondUser = intent.getParcelableExtra(NewMessage.USER_KEY)
 
-        supportActionBar?.title = user.username
+        supportActionBar?.title = secondUser?.username
 
         list_messages.adapter = adapter
 
@@ -46,18 +47,22 @@ class ChatLog : AppCompatActivity() {
 
 
     private fun listenMessage() {
-        val ref = FirebaseDatabase.getInstance().getReference("/messages")
+        val messageSU = secondUser?.uid
+        val messageFU = FirebaseAuth.getInstance().uid
+        val ref =
+            FirebaseDatabase.getInstance().getReference("/user_messages/$messageFU/$messageSU")
         ref.addChildEventListener(object : ChildEventListener {
             override fun onChildAdded(p0: DataSnapshot, p1: String?) {
                 val message = p0.getValue(Message::class.java)
-                if (message != null) Log.d(TAG, message.text)
+                if (message != null) {
+                    Log.d(TAG, message.text)
 
-                if (message?.firstUser == FirebaseAuth.getInstance().uid) {
-                    val firstUserPP = LatestMessagesActivity.currentUser ?: return
-                    adapter.add(UserFirstRow(message!!.text, firstUserPP))
-                } else {
-                    val secondUserPP = intent.getParcelableExtra<User>(NewMessage.USER_KEY)
-                    adapter.add(UserSecondRow(message!!.text, secondUserPP))
+                    if (message.firstUser == FirebaseAuth.getInstance().uid) {
+                        val currentUser = LatestMessagesActivity.currentUser ?: return
+                        adapter.add(UserFirstRow(message.text, currentUser))
+                    } else {
+                        adapter.add(UserSecondRow(message.text, secondUser!!))
+                    }
                 }
             }
 
@@ -73,17 +78,31 @@ class ChatLog : AppCompatActivity() {
     }
 
     private fun sendMessage() {
-        val ref = FirebaseDatabase.getInstance().getReference("/messages").push()
         val user = intent.getParcelableExtra<User>(NewMessage.USER_KEY)
         val text = chatMessage.text.toString()
-        val firstMessage = user.uid
-        val secondMessage = FirebaseAuth.getInstance().uid
-        val message =
-            Message(text, firstMessage, secondMessage!!, ref.key!!, System.currentTimeMillis())
-        ref.setValue(message)
+        val messageSU = user?.uid
+        val messageFU = FirebaseAuth.getInstance().uid
+        val refMessageFU =
+            FirebaseDatabase.getInstance().getReference("/user_messages/$messageFU/$messageSU")
+                .push()
+        val refMessageSU =
+            FirebaseDatabase.getInstance().getReference("/user_messages/$messageSU/$messageFU")
+                .push()
+        val message = Message(
+            text,
+            messageFU!!,
+            messageSU!!,
+            refMessageFU.key!!,
+            System.currentTimeMillis() / 1000
+        )
+        refMessageFU.setValue(message)
             .addOnSuccessListener {
-                Log.d(TAG, "Saved our chat message: ${ref.key}")
+                Log.d(TAG, "Saved our chat message: ${refMessageFU.key}")
+                chatMessage.text.clear()
+                list_messages.scrollToPosition(adapter.itemCount - 1)
             }
+        refMessageSU.setValue(message)
+
     }
 }
 
