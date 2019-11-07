@@ -7,12 +7,14 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.example.ourmessenger.R
 import com.example.ourmessenger.RegisterLogin.RegisterActivity
+import com.example.ourmessenger.Views.LatestMessagesRow
+import com.example.ourmessenger.modules.Message
 import com.example.ourmessenger.modules.User
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.*
+import com.xwray.groupie.GroupAdapter
+import com.xwray.groupie.ViewHolder
+import kotlinx.android.synthetic.main.activity_latest_messages.*
 
 class LatestMessagesActivity : AppCompatActivity() {
 
@@ -23,8 +25,54 @@ class LatestMessagesActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_latest_messages)
-        checkIfUserLogined()
+        list_latest_messages.adapter = adapter
+        fetchLatestMessages()
         fetchCurrentUser()
+        checkIfUserLogined()
+    }
+
+    val adapter = GroupAdapter<ViewHolder>()
+    val latestMessageMap = HashMap<String?, Message>()
+
+    private fun updateRecyclerView() {
+        adapter.clear()
+        latestMessageMap.values.forEach {
+            adapter.add(LatestMessagesRow(it))
+        }
+    }
+
+    private fun fetchLatestMessages() {
+        val latestMessageUid = FirebaseAuth.getInstance().uid
+        val refLatestMessages =
+            FirebaseDatabase.getInstance().getReference("/latest_message/$latestMessageUid")
+        refLatestMessages.addChildEventListener(object : ChildEventListener {
+
+            override fun onChildAdded(p0: DataSnapshot, p1: String?) {
+                val message = p0.getValue(Message::class.java) ?: return
+                latestMessageMap[p0.key] = message
+                updateRecyclerView()
+            }
+
+            override fun onChildChanged(p0: DataSnapshot, p1: String?) {
+                val message = p0.getValue(Message::class.java) ?: return
+                latestMessageMap[p0.key] = message
+                updateRecyclerView()
+            }
+
+            override fun onCancelled(p0: DatabaseError) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun onChildMoved(p0: DataSnapshot, p1: String?) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun onChildRemoved(p0: DataSnapshot) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+
+        })
     }
 
     private fun fetchCurrentUser() {
@@ -73,3 +121,5 @@ class LatestMessagesActivity : AppCompatActivity() {
         return super.onCreateOptionsMenu(menu)
     }
 }
+
+

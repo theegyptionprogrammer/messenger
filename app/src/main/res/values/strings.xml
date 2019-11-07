@@ -13,4 +13,5 @@
     <string name="new_message">new message</string>
     <string name="type_a_message">type a message</string>
     <string name="send">send</string>
+    <string name="latest_message">Latest Message</string>
 </resources>
