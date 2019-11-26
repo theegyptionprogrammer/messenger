@@ -15,7 +15,7 @@ class UserFirstRow(private var text: String, private var user: User) : Item<View
     }
 
     override fun bind(viewHolder: ViewHolder, position: Int) {
-        text = viewHolder.itemView.firstMessage.text as String
+        text = viewHolder.itemView.firstMessage.text.toString()
         Picasso.get().load(user.selectedPhotoUrl).into(viewHolder.itemView.firstIamge)
     }
 

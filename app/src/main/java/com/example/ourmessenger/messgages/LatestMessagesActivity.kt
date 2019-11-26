@@ -34,43 +34,36 @@ class LatestMessagesActivity : AppCompatActivity() {
     val adapter = GroupAdapter<ViewHolder>()
     val latestMessageMap = HashMap<String?, Message>()
 
-    private fun updateRecyclerView() {
+
+    private fun refreshRecyclerView() {
         adapter.clear()
         latestMessageMap.values.forEach {
             adapter.add(LatestMessagesRow(it))
         }
     }
-
     private fun fetchLatestMessages() {
         val latestMessageUid = FirebaseAuth.getInstance().uid
         val refLatestMessages =
-            FirebaseDatabase.getInstance().getReference("/latest_message/$latestMessageUid")
+            FirebaseDatabase.getInstance().getReference("/latest_message$latestMessageUid")
         refLatestMessages.addChildEventListener(object : ChildEventListener {
 
             override fun onChildAdded(p0: DataSnapshot, p1: String?) {
                 val message = p0.getValue(Message::class.java) ?: return
+                val user = p0.getValue(User::class.java) ?: return
                 latestMessageMap[p0.key] = message
-                updateRecyclerView()
+                refreshRecyclerView()
             }
 
             override fun onChildChanged(p0: DataSnapshot, p1: String?) {
                 val message = p0.getValue(Message::class.java) ?: return
+                val user = p0.getValue(User::class.java) ?: return
                 latestMessageMap[p0.key] = message
-                updateRecyclerView()
+                refreshRecyclerView()
             }
 
-            override fun onCancelled(p0: DatabaseError) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun onChildMoved(p0: DataSnapshot, p1: String?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun onChildRemoved(p0: DataSnapshot) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
+            override fun onChildMoved(p0: DataSnapshot, p1: String?) {}
+            override fun onChildRemoved(p0: DataSnapshot) {}
+            override fun onCancelled(p0: DatabaseError) {}
 
         })
     }
@@ -84,9 +77,7 @@ class LatestMessagesActivity : AppCompatActivity() {
                 currentUser = p0.getValue(User::class.java)
             }
 
-            override fun onCancelled(p0: DatabaseError) {
-
-            }
+            override fun onCancelled(p0: DatabaseError) {}
         })
     }
 

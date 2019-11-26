@@ -15,11 +15,10 @@ import kotlinx.android.synthetic.main.latest_messages_row.view.*
 
 class LatestMessagesRow(val message: Message) : Item<ViewHolder>() {
 
-    lateinit var chatPartnerUser: User
+    var chatPartnerUser: User? = null
 
     override fun bind(viewHolder: ViewHolder, position: Int) {
 
-        viewHolder.itemView.message_textview_latest_message.text = message.text
 
         val chatPartnerId: String
 
@@ -29,14 +28,17 @@ class LatestMessagesRow(val message: Message) : Item<ViewHolder>() {
             chatPartnerId = message.firstUser
         }
 
-
         val ref = FirebaseDatabase.getInstance().getReference("/users/$chatPartnerId")
         ref.addListenerForSingleValueEvent(object : ValueEventListener {
 
             override fun onDataChange(p0: DataSnapshot) {
                 chatPartnerUser = p0.getValue(User::class.java)!!
-                viewHolder.itemView.username_textview_latest_message.text = chatPartnerUser.username
-                Picasso.get().load(chatPartnerUser.selectedPhotoUrl)
+                viewHolder.itemView.message_textview_latest_message.text = message.text
+                viewHolder.itemView.username_textview_latest_message.text =
+                    chatPartnerUser?.username
+                Picasso
+                    .get()
+                    .load(chatPartnerUser!!.selectedPhotoUrl)
                     .into(viewHolder.itemView.latest_messages_PP)
             }
 
