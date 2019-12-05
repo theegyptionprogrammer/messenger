@@ -1,5 +1,6 @@
 package com.example.ourmessenger.modules
 
+
 class Message(
     val text: String,
     val firstUser: String,
@@ -7,6 +8,5 @@ class Message(
     val messageId: String,
     val timeStamp: Long
 ) {
-
     constructor() : this("", "", "", "", -1)
 }

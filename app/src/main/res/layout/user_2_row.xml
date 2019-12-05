@@ -10,13 +10,11 @@
         android:id="@+id/secondMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
         android:background="@drawable/rounded_edittext"
         android:maxWidth="240dp"
         android:padding="16dp"
-        app:layout_constraintEnd_toStartOf="@id/secondImage"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toStartOf="@+id/secondImage"
+        app:layout_constraintTop_toTopOf="@+id/secondImage" />
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/secondImage"

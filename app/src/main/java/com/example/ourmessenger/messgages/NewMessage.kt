@@ -51,12 +51,10 @@ class NewMessage : AppCompatActivity() {
                     val intent = Intent(view.context, ChatLog::class.java)
                     intent.putExtra(USER_KEY, userItem.user)
                     startActivity(intent)
-
                 }
             }
 
-            override fun onCancelled(p0: DatabaseError) {
-            }
+            override fun onCancelled(p0: DatabaseError) {}
         })
     }
 }

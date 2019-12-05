@@ -57,27 +57,15 @@ class ChatLog : AppCompatActivity() {
 
                     if (message.firstUser == FirebaseAuth.getInstance().uid) {
                         val currentUser = LatestMessagesActivity.currentUser ?: return
-                        adapter.add(UserFirstRow(message.text, currentUser))
+                        adapter.add(UserFirstRow(message, currentUser))
                     } else {
-                        adapter.add(UserSecondRow(message.text, secondUser!!))
+                        adapter.add(UserSecondRow(message, secondUser!!))
                     }
                 }
+                list_messages.scrollToPosition(adapter.itemCount - 1)
             }
 
-            override fun onChildChanged(p0: DataSnapshot, p1: String?) {
-                val message = p0.getValue(Message::class.java)
-                if (message != null) {
-                    Log.d(TAG, message.text)
-
-                    if (message.firstUser == FirebaseAuth.getInstance().uid) {
-                        val currentUser = LatestMessagesActivity.currentUser ?: return
-                        adapter.add(UserFirstRow(message.text, currentUser))
-                    } else {
-                        adapter.add(UserSecondRow(message.text, secondUser!!))
-                    }
-                }
-            }
-
+            override fun onChildChanged(p0: DataSnapshot, p1: String?) {}
             override fun onCancelled(p0: DatabaseError) {}
             override fun onChildMoved(p0: DataSnapshot, p1: String?) {}
             override fun onChildRemoved(p0: DataSnapshot) {}
@@ -88,8 +76,7 @@ class ChatLog : AppCompatActivity() {
         val user = intent.getParcelableExtra<User>(NewMessage.USER_KEY)
         val text = chatMessage.text.toString()
         val messageSU = user?.uid
-        val messageFU = FirebaseAuth.getInstance().uid
-
+        val messageFU = FirebaseAuth.getInstance().currentUser!!.uid
 
         val refMessageFU =
             FirebaseDatabase.getInstance().getReference("/user_messages/$messageFU/$messageSU")
@@ -100,7 +87,7 @@ class ChatLog : AppCompatActivity() {
 
         val message = Message(
             text,
-            messageFU!!,
+            messageFU,
             messageSU!!,
             refMessageFU.key!!,
             System.currentTimeMillis() / 1000

@@ -19,7 +19,6 @@ class LatestMessagesRow(val message: Message) : Item<ViewHolder>() {
 
     override fun bind(viewHolder: ViewHolder, position: Int) {
 
-
         val chatPartnerId: String
 
         if (message.firstUser == FirebaseAuth.getInstance().uid) {
@@ -32,19 +31,23 @@ class LatestMessagesRow(val message: Message) : Item<ViewHolder>() {
         ref.addListenerForSingleValueEvent(object : ValueEventListener {
 
             override fun onDataChange(p0: DataSnapshot) {
-                chatPartnerUser = p0.getValue(User::class.java)!!
+                chatPartnerUser = p0.getValue(User::class.java)
                 viewHolder.itemView.message_textview_latest_message.text = message.text
                 viewHolder.itemView.username_textview_latest_message.text =
                     chatPartnerUser?.username
-                Picasso
-                    .get()
-                    .load(chatPartnerUser!!.selectedPhotoUrl)
-                    .into(viewHolder.itemView.latest_messages_PP)
+                if (chatPartnerUser?.selectedPhotoUrl!!.isEmpty()) {
+                    Picasso.get().load(R.drawable.ic_android_green_24dp)
+
+                        .into(viewHolder.itemView.latest_messages_PP)
+                } else {
+                    Picasso
+                        .get().load(chatPartnerUser?.selectedPhotoUrl)
+                        .placeholder(R.drawable.ic_android_green_24dp)
+                        .into(viewHolder.itemView.latest_messages_PP)
+                }
             }
 
-            override fun onCancelled(p0: DatabaseError) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
+            override fun onCancelled(p0: DatabaseError) {}
         })
     }
 
